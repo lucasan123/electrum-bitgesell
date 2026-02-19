@@ -16,8 +16,8 @@ import sys
 import time
 import copy
 
-from electrum.crypto import sha256d, EncodeAES_base64, EncodeAES_bytes, DecodeAES_bytes, hmac_oneshot
-from electrum.bitgesell import public_key_to_p2pkh
+from electrum.crypto import sha256d, sha256, EncodeAES_base64, EncodeAES_bytes, DecodeAES_bytes, hmac_oneshot
+from electrum.bitgesell import public_key_to_p2pkh, keccak256
 from electrum.bip32 import BIP32Node, convert_bip32_intpath_to_strpath, is_all_public_derivation
 from electrum import ecc
 from electrum.ecc import msg_magic
@@ -542,7 +542,7 @@ class DigitalBitbox_KeyStore(Hardware_KeyStore):
                 if not inputPath:
                     self.give_error("No matching pubkey for sign_transaction")  # should never happen
                 inputPath = convert_bip32_intpath_to_strpath(inputPath)
-                inputHash = sha256d(bfh(tx.serialize_preimage(i)))
+                inputHash = keccak256(bfh(tx.serialize_preimage(i)))
                 hasharray_i = {'hash': to_hexstr(inputHash), 'keypath': inputPath}
                 hasharray.append(hasharray_i)
                 inputhasharray.append(inputHash)

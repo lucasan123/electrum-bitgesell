@@ -36,7 +36,7 @@ import attr
 from . import ecc
 from . import constants, util
 from .util import bfh, bh2u, chunks, TxMinedInfo, PR_PAID
-from .bitgesell import redeem_script_to_address
+from .bitgesell import redeem_script_to_address, keccak256
 from .crypto import sha256, sha256d
 from .transaction import Transaction, PartialTransaction, TxInput
 from .logging import Logger
@@ -880,7 +880,7 @@ class Channel(AbstractChannel):
 
         pending_local_commitment = self.get_next_commitment(LOCAL)
         preimage_hex = pending_local_commitment.serialize_preimage(0)
-        pre_hash = sha256d(bfh(preimage_hex))
+        pre_hash = keccak256(bfh(preimage_hex))
         if not ecc.verify_signature(self.config[REMOTE].multisig_key.pubkey, sig, pre_hash):
             raise Exception(f'failed verifying signature of our updated commitment transaction: {bh2u(sig)} preimage is {preimage_hex}')
 
@@ -919,7 +919,7 @@ class Channel(AbstractChannel):
                                                           commit=ctx,
                                                           ctx_output_idx=ctx_output_idx,
                                                           htlc=htlc)
-        pre_hash = sha256d(bfh(htlc_tx.serialize_preimage(0)))
+        pre_hash = keccak256(bfh(htlc_tx.serialize_preimage(0)))
         remote_htlc_pubkey = derive_pubkey(self.config[REMOTE].htlc_basepoint.pubkey, pcp)
         if not ecc.verify_signature(remote_htlc_pubkey, htlc_sig, pre_hash):
             raise Exception(f'failed verifying HTLC signatures: {htlc} {htlc_direction}')
@@ -1353,7 +1353,7 @@ class Channel(AbstractChannel):
     def signature_fits(self, tx: PartialTransaction) -> bool:
         remote_sig = self.config[LOCAL].current_commitment_signature
         preimage_hex = tx.serialize_preimage(0)
-        msg_hash = sha256d(bfh(preimage_hex))
+        msg_hash = keccak256(bfh(preimage_hex))
         assert remote_sig
         res = ecc.verify_signature(self.config[REMOTE].multisig_key.pubkey, remote_sig, msg_hash)
         return res

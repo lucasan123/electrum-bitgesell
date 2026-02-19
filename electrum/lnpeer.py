@@ -20,6 +20,7 @@ import aiorpcx
 
 from .crypto import sha256, sha256d
 from . import bitgesell, util
+from .bitgesell import keccak256
 from . import ecc
 from .ecc import sig_string_from_r_and_s, get_r_and_s_from_sig_string, der_sig_from_sig_string
 from . import constants
@@ -1458,7 +1459,7 @@ class Peer(Logger):
         def verify_signature(tx, sig):
             their_pubkey = chan.config[REMOTE].multisig_key.pubkey
             preimage_hex = tx.serialize_preimage(0)
-            pre_hash = sha256d(bfh(preimage_hex))
+            pre_hash = keccak256(bfh(preimage_hex))
             return ecc.verify_signature(their_pubkey, sig, pre_hash)
         # the funder sends the first 'closing_signed' message
         if chan.constraints.is_initiator:
