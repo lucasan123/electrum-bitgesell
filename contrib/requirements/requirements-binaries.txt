@@ -1,2 +1,2 @@
-PyQt5<5.15
-pycryptodomex>=3.7
+PyQt5>=5.14,<5.16
+pycryptodomex>=3.7,<4.0

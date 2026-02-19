@@ -1,6 +1,6 @@
 pip
 setuptools
-pyinstaller>=3.6
+pyinstaller>=6.0
 
 # needed by pyinstaller:
 macholib
